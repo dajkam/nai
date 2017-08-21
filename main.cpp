@@ -186,7 +186,7 @@ void segreguj(gracz &g){
     }
 
   }
-  
+
 
 
 
@@ -441,6 +441,12 @@ void przygotowanie(para &NS,para &WE) {
     WE.rozgrywajaca=1;
 
   }
+  if (NS.rozgrywajaca==1) {
+    /* code */
+  }
+  if (WE.rozgrywajaca==1) {
+    /* code */
+  }
 }
 
 void ruch(/* arguments */) {
@@ -616,7 +622,7 @@ std::cout << "" << '\n';
   std::cout << "caro "<<WE.dcaro << '\n';
   std::cout << "kier "<< WE.dkier << '\n';
   std::cout << "pik "<< WE.dpik << '\n';
-
+  przygotowanie(NS,WE);
 
 
 
