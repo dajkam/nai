@@ -5,7 +5,7 @@
 #include<random>
 #include<cstdlib>
 #include<ctime>
-#include<algorithm>
+#include <algorithm>
 #include <functional>
 //2♠, 2♣, 2♥, 2♦
 
@@ -22,6 +22,7 @@ bool atu;
 bool zagrana;
 int w;
 int pun;
+char lit;
 
 
 
@@ -90,9 +91,284 @@ public:
 };
 
 
+class licytacja {
+public:
+
+  para NS;
+  para WE;
+
+  gracz N;
+  gracz S;
+  gracz W;
+  gracz E;
+
+  string atu;
+  int kontrakt;
+  para rozgrywajaca_para;
+  gracz rozgrywajacy_gracz;
+  gracz dziadek;
+  gracz zaczynajacy_licytacje; // nie istotne
+  gracz wistujacy;
+  int pozostale_ruchy;
+  int nr_konstruktora;
+
+  licytacja();
+
+
+  // automatyczna licytacja
+
+  licytacja(para NS,para WE, gracz N, gracz S, gracz W, gracz E,int nr_konstruktora);
+
+
+  // ręczna licytacja
+  licytacja(para NS,para WE, gracz N, gracz S, gracz W, gracz E,int nr_konstruktora, gracz zaczynajacy_licytacje);
+
+
+};
+
+
+
 gracz :: gracz(){}
 para :: para(){}
 karta :: karta(){}
+licytacja :: licytacja(){}
+
+// licytacja automatyczna
+
+licytacja :: licytacja(para NS_,para WE_, gracz N_, gracz S_, gracz W_, gracz E_,int nr_konstruktora_)
+: NS(NS_)
+, WE(WE_)
+, N(N_)
+, S(S_)
+, W(W_)
+, E(E_)
+, nr_konstruktora(nr_konstruktora_)
+{
+
+pozostale_ruchy=13;
+kontrakt =0;
+  atu="atu nie zostało jeszcze wybrane";
+  //rozgrywajaca_para;
+  //rozgrywajacy_gracz;
+  //dziadek;
+
+  if (nr_konstruktora!=1) {
+    cout << "wybrałeś zły konstruktor zresetuj program" << "\n";
+  }
+
+  if (NS.punkty>WE.punkty) {
+    NS.rozgrywajaca=true;
+    rozgrywajaca_para=NS;
+  }
+  if (WE.punkty>NS.punkty) {
+    WE.rozgrywajaca=true;
+    rozgrywajaca_para=WE;
+  }
+  if (NS.punkty==WE.punkty) {
+    std::cout << "zrównoważony podział punktów zresetój program" << '\n';
+  }
+
+  //NS
+
+  if (NS.rozgrywajaca==true) {
+    int t=0;
+    t = max(max(NS.dtrefl,NS.dcaro),max(NS.dkier,NS.dpik));
+    std::cout << "t === " << t << '\n';
+
+    if (t==NS.dtrefl) {
+      atu="♣";
+    }
+    if (t==NS.dcaro) {
+      atu="♦";
+    }
+    if (t==NS.dkier) {
+      atu="♥";
+    }
+    if (t==NS.dpik) {
+      atu="♠";
+    }
+    std::cout << "atu :::" << atu << '\n';
+
+    if (N.punkty>=S.punkty) {
+      rozgrywajacy_gracz=N;
+      dziadek=S;
+      wistujacy=E;  //tak żeby rozgrywający był ostatni
+    }
+
+    if (S.punkty>N.punkty) {
+      rozgrywajacy_gracz=S;
+      dziadek=N;
+      wistujacy=W;
+    }
+    kontrakt=t-6;
+
+    std::cout << "kontrakt to :::" << kontrakt<< atu << '\n';
+  }
+
+    //WE
+
+
+if (WE.rozgrywajaca==true) {
+    int t=0;
+    t = max(max(WE.dtrefl,WE.dcaro),max(WE.dkier,WE.dpik));
+    std::cout << "t === " << t << '\n';
+
+    if (t==WE.dtrefl) {
+      atu="♣";
+    }
+    if (t==WE.dcaro) {
+      atu="♦";
+    }
+    if (t==WE.dkier) {
+      atu="♥";
+    }
+    if (t==WE.dpik) {
+      atu="♠";
+    }
+    std::cout << "atu :::" << atu << '\n';
+
+    if (W.punkty>=E.punkty) {
+      rozgrywajacy_gracz=W;
+      dziadek=E;
+      wistujacy=N;  //tak żeby rozgrywający był ostatni
+    }
+
+    if (E.punkty>W.punkty) {
+      rozgrywajacy_gracz=E;
+      dziadek=W;
+      wistujacy=S;
+    }
+
+      kontrakt=t-6;
+
+      std::cout << "kontrakt to :::" << kontrakt<< atu << '\n';
+  }
+
+
+
+
+
+
+
+
+}
+
+// licytacja ręczna
+
+licytacja :: licytacja(para NS_,para WE_, gracz N_, gracz S_, gracz W_, gracz E_,int nr_konstruktora_, gracz zaczynajacy_licytacje_)
+: NS(NS_)
+, WE(WE_)
+, N(N_)
+, S(S_)
+, W(W_)
+, E(E_)
+, nr_konstruktora(nr_konstruktora_)
+, zaczynajacy_licytacje(zaczynajacy_licytacje_)
+
+
+{
+  pozostale_ruchy=13;
+  atu="atu nie zostało jeszcze wybrane";
+  //rozgrywajaca_para;
+  //rozgrywajacy_gracz;
+  //dziadek;
+  //nr_konstruktora;
+  //zaczynajacy_licytacje;
+  if (nr_konstruktora!=2) {
+    cout << "wybrałeś zły konstruktor zresetuj program" << "\n";
+  }
+  bool p = true;
+  int pass=0;
+  std::cout << "wpisz wysokość kontraktu i kolor słownie atu bez odstępów lub słowo pass 4 pasy pominą rozdanie a 3 pasy zakończą licytację " << '\n';
+  int w;
+  string k;
+  while (p) {
+    //N
+    getline (std::cin,k);
+    if (k=="pass") {
+      pass++;
+    }
+    else{
+      int n;
+      pass=0;
+      n=k[0]-30;
+      atu=k[1];
+      std::cout << "kon to  " << k << '\n';
+
+
+    }
+
+    //E
+
+    getline (std::cin,k);
+    if (k=="pass") {
+      pass++;
+    }
+    else{
+      int n;
+      pass=0;
+      n=k[0]-30;
+      atu=k[1];
+      std::cout << "kon to  " << k << '\n';
+
+
+    }
+
+    //S
+
+    getline (std::cin,k);
+    if (k=="pass") {
+      pass++;
+    }
+    else{
+      int n;
+      pass=0;
+      n=k[0]-30;
+      atu=k[1];
+      std::cout << "kon to  " << k << '\n';
+
+
+    }
+
+    //W
+
+    getline (std::cin,k);
+    if (k=="pass") {
+      pass++;
+    }
+    else{
+      int n;
+      pass=0;
+      n=k[0]-30;
+      atu=k[1];
+      std::cout << "kon to  " << k << '\n';
+
+
+    }
+
+
+
+
+
+    if (pass >=4) {
+      p=false;
+      break;
+    }
+  }
+
+
+/*
+
+NALEŻY DOKONCZYĆ
+
+*/
+
+}
+
+
+
+
+
 
 
 
@@ -202,14 +478,26 @@ void segreguj(gracz &g){
 
 
 karta :: karta(int starszenstwo,int w){
-if(starszenstwo==0)
-    kolor="♣";
-if(starszenstwo==1)
-    kolor = "♦";
-if(starszenstwo==2)
+if(starszenstwo==0){
+  kolor="♣";
+  lit='t';
+}
+
+if(starszenstwo==1){
+  kolor = "♦";
+  lit='c';
+}
+
+if(starszenstwo==2){
     kolor="♥";
-if(starszenstwo==3)
+    lit='k';
+}
+
+if(starszenstwo==3){
     kolor = "♠";
+    lit='p';
+}
+
 
 pun=0;
 
@@ -449,11 +737,151 @@ void przygotowanie(para &NS,para &WE) {
   }
 }
 
-void ruch(/* arguments */) {
+int war(string &r){
+  char l;
+  int n;
+  l=r[0];
+  n=l-32;
+  if (n==1) {
+    n=8;
+  }
+  if (l=='A'||l=='K'||l=='Q'||l=='J') {
+    if (l=='J') {
+      n=9;
+    }
+    if (l=='Q') {
+      n=10;
+    }
+    if (l=='K') {
+      n=11;
+    }
+    if (l=='A') {
+      n=12;
+    }
+  }
+  return n;
+}
+string kol(string &r){
+  //2♠, 2♣, 2♥, 2♦
+  string k;
+  if (r[1]=='t') {
+    k = "♣" ;
+  }
+  if (r[1]=='c') {
+    k = "♦" ;
+  }
+  if (r[1]=='k') {
+    k = "♥" ;
+  }
+  if (r[1]=='p') {
+    k = "♠" ;
+  }
+
+  return  k;
+}
+
+karta znajdz2(vector < karta >& kolor, int n){
+  karta card;
+  for (int i = 0; i < kolor.size()-1; i++) {
+    if (kolor[i].w==n) {
+      card=kolor[i];
+      kolor.erase(kolor.begin()+i);
+      break;
+
+    }
+
+  }
+
+  return card;
+  /*
+
+ZAPROGRAMUJ CO NA WYPADEK NIE ZNALEZIENIA KARTY U GRACZA CZYLI PO PROSKU JEJ NIE MA
+
+  */
+
+}
+
+karta znajdz(gracz &g, int n, string k){
+  karta card;
+  if (k=="♣") {
+  card =  znajdz2(g.trefl,n);
+  }
+  if (k=="♦") {
+    card = znajdz2(g.caro,n);
+  }
+  if (k=="♥") {
+    card = znajdz2(g.kier,n);
+  }
+  if (k=="♠") {
+  card =  znajdz2(g.pik,n);
+  }
+  return card;
+
+}
+
+
+void ruch(licytacja &lic, gracz tab[], int &nr_ruchu, int &j, karta kar[]) {
+  for (int i = 0; i < 4; i++) {
+    std::cout << "teraz jest ruch gracza :::   " << tab[i].pozycja << '\n';
+    string r;
+    cin >> r;
+    int n;
+    string k;
+    n = war(r);
+    k = kol(r);
+    //karta kar[4];
+    karta ka;
+    ka = znajdz(tab[i],n,k);
+    kar[i]=ka;
+
+
+  }
+}
+
+void gra(licytacja &lic, gracz tab[]) {
+  //gracz tab[4];
+  if (lic.rozgrywajacy_gracz.pozycja=="N") {
+    tab[0]=lic.E;
+    tab[1]=lic.S;
+    tab[2]=lic.W;
+    tab[3]=lic.N;
+  }
+
+  if (lic.rozgrywajacy_gracz.pozycja=="S") {
+    tab[0]=lic.W;
+    tab[1]=lic.N;
+    tab[2]=lic.E;
+    tab[3]=lic.S;
+  }
+
+  if (lic.rozgrywajacy_gracz.pozycja=="W") {
+    tab[0]=lic.N;
+    tab[1]=lic.E;
+    tab[2]=lic.S;
+    tab[3]=lic.W;
+  }
+
+  if (lic.rozgrywajacy_gracz.pozycja=="E") {
+    tab[0]=lic.S;
+    tab[1]=lic.W;
+    tab[2]=lic.N;
+    tab[3]=lic.E;
+  }
+
+  for (int i = 1; i < 14; i++) {
+    int j = -5;
+    karta kar[4];
+    ruch(lic,tab,i,j,kar);
+  }
+
+
+}
+
+void oliczanie_wyniku(/* arguments */) {
   /* code */
 }
 
-void gra(/* arguments */) {
+void bot(/* arguments */) {
   /* code */
 }
 
@@ -623,6 +1051,31 @@ std::cout << "" << '\n';
   std::cout << "kier "<< WE.dkier << '\n';
   std::cout << "pik "<< WE.dpik << '\n';
   przygotowanie(NS,WE);
+
+  std::cout << "jaką licytację chcesz wykonać ? : wpisz auto lub reczna :" << '\n';
+
+
+  licytacja lic;
+
+ string jaka_licytacja;
+
+ cin >> jaka_licytacja;
+
+  if (jaka_licytacja=="auto") {
+      lic=licytacja(NS,WE,N,S,W,E,1);
+  }
+
+  if (jaka_licytacja=="reczna") {
+      lic=licytacja(NS,WE,N,S,W,E,2,N);
+  }
+  gracz tab[4];
+  gra(lic,tab);
+
+  std::cout << "gracz n  " <<  tab[3].pik[0].f<< '\n';
+
+
+
+
 
 
 
